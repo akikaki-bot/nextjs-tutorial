@@ -1,0 +1,90 @@
+
+import { PageNavigation } from "@/components/PageNavigation";
+
+<PageNavigation 
+    previousPage={"/tutorial/"} 
+    previousPageTitle={"このサイトについて"} 
+    nextPage={"/tutorial/page-creation"}
+    nextPageTitle={"ページを作成してみる"}
+/>
+
+export const meta = {
+    title: "Next.js チュートリアル - 環境構築",
+    date: "2024-08-02",
+    tags: ["Next.js", "Tutorial"],
+    description: "環境をさっそく整えましょう。",
+}
+
+
+
+# 1. Getting Started!
+
+ようこそ。このページでは、Next.jsの基本的な使い方を学びます。
+
+## 1.0. 事前準備
+
+### 1.0.1. Node.jsのインストール
+
+Node.jsはインストールされていますか？インストールされていない場合は、[Node.jsの公式サイト](https://nodejs.org/ja/)からダウンロードしてインストールしてください。
+
+ちなみに、Node.jsがインストールされているかどうかは、以下のコマンドで確認できます。
+
+```bash
+node -v
+```
+
+バージョンが表示されれば、インストールされています。
+もし、**不明なコマンド**と表示された場合は、インストールされていません。
+
+## 1.1. Next.jsの環境を構築しよう
+
+### 1.1.1. Next.jsのインストール
+
+```bash
+npx create-next-app
+```
+
+このコマンドを実行すると、こんな感じの質問がされます：
+
+```bash
+√ What is your project named? ... 
+√ Would you like to use TypeScript? ... No / Yes
+√ Would you like to use ESLint? ... No / Yes
+√ Would you like to use Tailwind CSS? ... No / Yes
+√ Would you like to use `src/` directory? ... No / Yes
+√ Would you like to use App Router? (recommended) ... No / Yes
+√ Would you like to customize the default import alias (@/*)? ... No / Yes
+```
+
+上から、プロジェクト名、TypeScriptの使用、ESLintの使用、Tailwind CSSの使用、src/ ディレクトリの使用、App Routerの使用、デフォルトのインポートエイリアスのカスタマイズの有無を訊かれます。
+
+特にこだわりがなければ、以下のような回答で問題ありません：
+
+```bash
+√ What is your project named? ... my-site
+√ Would you like to use TypeScript? ... Yes
+√ Would you like to use ESLint? ... No
+√ Would you like to use Tailwind CSS? ... Yes
+√ Would you like to use `src/` directory? ... No
+√ Would you like to use App Router? (recommended) ... Yes
+√ Would you like to customize the default import alias (@/*)? ... No
+```
+
+ということで準備は完了！次は試しに起動してみます。
+
+### 1.1.2. Next.jsの起動
+
+先ほど作成したプロジェクトのディレクトリに移動して、以下のコマンドを実行します：
+
+```bash
+npm run dev
+```
+
+これで、Next.jsの開発サーバーが起動します。ブラウザで `http://localhost:3000` にアクセスしてみましょう。
+
+良い感じのかっこいいサイトが出てきたらOK!
+
+## 1.2. おしまい
+
+以上がNext.jsを使う上での**一番初歩的な**部分です。次は、実際にコードを書いていきましょう！
+

@@ -1,0 +1,103 @@
+
+import { PageNavigation } from "@/components/PageNavigation";
+
+<PageNavigation 
+    previousPage={"/tutorial/getting-started"} 
+    previousPageTitle={"環境構築"} 
+    nextPage={"/"}
+    nextPageTitle={"ホーム"}
+/>
+
+export const meta = {
+    title: "Next.js チュートリアル - ページ作成",
+    date: "2024-08-02",
+    tags: ["Next.js", "Tutorial"],
+    description: "ページを作ってみましょう！",
+}
+
+# 2. ページを作成してみる
+
+この章では、実際にNext.jsを使ってページを作成してみます。
+
+## 2.1. ページの作成
+
+まずは、基本的なディレクトリ構造に着目してみましょう。
+
+あなたがもし、[先ほどのチュートリアル](/tutorial/getting-started)でプロジェクトを作成するときに、`src/` ディレクトリを使わなかった場合、以下のようなディレクトリ構造になっているはずです：
+
+```bash
+    my-site/
+    ├── node_modules/
+    ├── public/
+    ├── app/
+    │   ├── favicon.ico
+    │   ├── globals.css
+    │   ├── page.tsx
+    │   └── layout.tsx
+    ├── package.json
+    ├── package-lock.json
+    ├── postcss.config.mjs
+    ├── README.md
+    ├── tailwind.config.ts
+    └── tsconfig.json
+```
+
+それぞれのファイルやディレクトリの役割に着目してみましょう。
+
+- `node_modules/`：プロジェクトで使用するパッケージがインストールされているディレクトリ
+- `public/`：静的ファイルを配置するディレクトリ（画像やフォントなど）
+- `app/`：アプリケーションのコードを配置するディレクトリ
+  - `favicon.ico`：サイトのアイコン
+  - `globals.css`：グローバルなスタイルを定義するファイル
+  - `page.tsx`：実際に表示されるページを定義するファイル
+  - `layout.tsx`：ページのレイアウトを定義するファイル
+- `package.json`：プロジェクトの設定・依存関係を保存するファイル
+- `package-lock.json`：`package.json` のおまけ
+- `postcss.config.mjs`：PostCSS（CSSのビルドツール）の設定ファイル
+- `README.md`：プロジェクトの説明を記述するファイル
+- `tailwind.config.ts`：Tailwind CSS（CSSフレームワーク）の設定ファイル
+- `tsconfig.json`：TypeScriptの設定ファイル
+
+今回はページを作成することが目的なので、`app/` ディレクトリ内に新しいファイルを作成します。
+
+で、す、が。ここで一つ**HTML**とは違う点があります。Next.js AppRouter特有の違う点です。
+
+## 2.2. そもそも AppRouter って何？
+
+AppRouterとは、Next.js v13で導入された新しいページルーティングシステムです。
+
+ディレクトリの名前が各ページの名前になるという少し変わった仕組みです。
+
+例えば、`app/tutorial/page.tsx` というファイルがある場合、`/tutorial` というURLでアクセスできるようになります。
+
+ここで注意なのですが、`app/tutorial/start.tsx`というファイルを新しく作ったとしても`/tutorial/start`というURLでアクセスできるわけではありません。
+
+あくまでも一ディレクトリに一ページが対応するという仕組みです。
+
+## 2.3. ページを作成してみる
+
+それでは、実際にページを作成してみましょう。
+
+追加したいページの名前を考え、その名前をもとに新しいディレクトリを `app/` ディレクトリ内に作成します。
+
+ここでは、katada というページを作成したい、ということにしますので `app/katada/` というディレクトリを作成します。
+
+次に、そのディレクトリ内に page.tsx ファイルを設置します。
+
+`page.tsx` ファイルには、以下のようなコードを記述します：
+
+```tsx
+
+export default function Page(){
+    return (
+        <div>
+            <h1 className="text-2xl"> We are Katada </h1>
+        </div>
+    )
+}
+
+```
+
+page.tsx ファイルは必ず`export default`（デフォルトエクスポート）する必要があります。
+
+これで、`/katada` というURLでアクセスすると、`We are Katada` という文字列が表示されるページが作成されました。
