@@ -1,0 +1,528 @@
+
+import { PageNavigation } from "../../../components/pageNavigation";
+
+<PageNavigation 
+    previousPage={"/tutorial/page-creation"} 
+    previousPageTitle={"ページを作成してみる"} 
+    nextPage={"/tutorial/fetch-api"}
+    nextPageTitle={"APIを叩いてみる"}
+/>
+
+export const meta = {
+    title: "Next.js チュートリアル - TypeScriptの基本",
+    date: "2024-08-02",
+    tags: ["Next.js", "Tutorial", "TypeScript"],
+    description: "TypeScriptって、何？",
+}
+
+# 3. TypeScriptについて
+
+## 3.0. TypeScriptって、何？
+
+[TypeScript](https://typescriptlang.org)とは、私が大好きなプログラミング言語です。
+
+、、、そうではなく、**TypeScript**は**JavaScript**の**親戚**であり、**静的**型付けを出来るようにした**プログラミング言語**です。
+
+例えば、以下のようなコードをJavaScriptで書いたとします：
+
+```javascript
+function add(a, b) {
+    return a + b;
+}
+
+console.log(add(1, 2)); // 3
+```
+
+このコードは、関数addを定義し、引数 a と b を受け取り、それらを足して返すというものです。
+
+一見問題なさそうですが、もし、add(1, "2") というように、引数に文字列を渡してしまった場合、JavaScriptはエラーを吐かずに、"12" という文字列を返してしまいます。
+
+これはこの関数の**足し算をする**という目的には合致していませんよね。バグの元です。
+
+そういった問題を解決するために、TypeScriptでは**型**を使って、関数の引数や返り値に対して**型を指定**することが出来ます。
+
+```typescript
+function add(a: number, b: number): number {
+    return a + b;
+}
+
+console.log(add(1, 2)); // 3
+```
+
+このように、引数 a と b には number 型を指定し、返り値にも number 型を指定しています。
+
+もし、add(1, "2") というように、引数に文字列を渡そうとすると、TypeScriptはエラーを吐いてくれます。
+
+```typescript
+console.log( add(1, "2") );
+        //   ~~~~~~~~~
+        //   Argument of type 'string' is not assignable to parameter of type 'number'.
+        //　 型 'string' の引数は型 'number' のパラメータに割り当てられません。
+```
+
+このように、TypeScriptは**型**を使って、**コードの品質**を向上させると同時に、**開発体験の向上**というあまり考慮されないメリットも提供してくれます。
+
+素晴らしいですね。
+
+## 3.1. TypeScriptの基本
+
+TypeScriptの基本的な使い方を学んでいきましょう。
+
+### 3.1.1. 型について
+
+TypeScriptでは、以下のような**プリミティブ型**が用意されています。
+
+- number：数値
+- string：文字列
+- boolean：真偽値
+- null：null（空）
+- undefined：undefined（未定義）
+- symbol：シンボル
+- bigint：BigInt（大きな整数）
+
+これらの型を使って、関数の引数や返り値に型を指定することが出来ます。
+```typescript
+
+function add(a: number, b: number): number {
+    return a + b;
+}
+
+console.log(add(1, 2)); // 3
+```
+
+### 3.1.2 プリミティブ以外の型
+
+プリミティブ型以外にも、オブジェクトや配列、関数など、様々な型が用意されています。
+
+説明は省略しますが、以下のような型が用意されています：
+
+- object：オブジェクト
+- Array\<T\>：型Tを含む配列
+- function：関数
+- Promise\<T\>：型Tを返すPromise
+- ...
+
+### 3.1.3. 型エイリアス
+
+TypeScriptでは、型を変数のように扱うことが出来ます。
+
+簡単に言うと、型を自分で作る！ということです。それが**型エイリアス**です。
+
+型を自分で作ることで、このようなコードを書くことが出来ます。
+
+```typescript
+type User = {
+    name: string;
+    age: number;
+}
+
+const user: User = {
+    name: "John",
+    age: 20
+}
+```
+
+このuser変数は、User型を持つオブジェクトであることが保証されます。
+
+user変数にあらたにプロパティを追加しようとすると、TypeScriptはエラーを吐いてくれます。
+
+```typescript
+const user: User = {
+    name: "John",
+    age: 20,
+    email: ""
+//  ~~~~~
+//  Object literal may only specify known properties, and 'email' does not exist in type 'User'.
+//  オブジェクトリテラルは既知のプロパティのみを指定できます。'email' は型 'User' に存在しません。
+}
+```
+
+
+### 3.1.3.1 interfaceを使った型エイリアス
+
+```typescript
+interface User {
+    name: string;
+    age: number;
+}
+```
+
+interfaceを使って、Userという型を定義しました。
+
+interfaceは、オブジェクトの型を定義するために使われます。
+
+typeとは違う点は、interfaceは**拡張**が出来るという点です。
+
+```typescript
+interface User {
+    name: string;
+    age: number;
+}
+
+interface EmailUser extends User {
+    email: string;
+}
+```
+
+このように、interfaceを使って、User型を拡張して、EmailUser型を作成することが出来ます。
+
+### 3.1.3.2 typeを使った型エイリアス
+
+```typescript
+type User = {
+    name: string;
+    age: number;
+}
+```
+
+typeを使って、Userという型を定義しました。特にinterfaceとの違いはありません。
+
+ですが、typeはinterfaceと違い、**拡張**が出来ません。
+
+しかし、typeは**Union型**や**Intersection型**を使うことが出来ます。
+
+```typescript
+type User = {
+    name: string;
+    age: number;
+}
+
+type Admin = {
+    role: string;
+}
+
+type AdminUser = User & Admin;
+```
+
+このように、typeを使って、User型とAdmin型を結合して、AdminUser型を作成することが出来ます。
+
+これは、interfaceで言うところの**拡張**に相当します。
+
+また、Union型というものもを使うことも出来ます。
+
+```typescript
+type User = {
+    name: string;
+    age: number;
+}
+
+type Admin = {
+    role: string;
+}
+
+type UserOrAdmin = User | Admin;
+```
+
+このように、typeを使って、User型もしくはAdmin型を持つUserOrAdmin型を作成することが出来ます。
+
+このようなUnion型の使い方もできます。
+
+```typescript
+type Status = "success" | "error" | "loading";
+```
+
+このように、Status型は、"success"、"error"、"loading"のいずれかの文字列を持つことが出来ます。
+
+このようなUnion型は、特にAPIのレスポンスなどで使うと便利です。
+
+```typescript
+type Response = {
+    status: Status;
+    data: any;
+}
+
+const response: Response = {
+    status: "success" // "error" や "loading" でもOK, "hoge" だとエラー,
+    data: { message: "Hello, World!" }
+}
+```
+
+### 3.1.4. 型アサーション
+
+TypeScriptでは、型アサーションを使って、型を上書きすることが出来ます。
+
+```typescript
+const value: any = "Hello, World!";
+const length = (value as string).length;
+```
+
+このように、valueがany型であるため、通常ではlengthプロパティが存在しないためエラーが出ます。
+
+しかし、value型をstring型に上書き（アサーション）することで、lengthプロパティを使うことが出来ます。
+
+アサーションは使い方によっては非常に便利ですが、型安全性を損なう可能性があるため、適切に使うようにしましょう。
+
+### 3.1.5 型ガード
+
+TypeScriptでは、型ガードを使って、型を判定することが出来ます。
+
+```typescript
+
+function isString(value: any): value is string {
+    return typeof value === "string";
+}
+
+const value: any = "Hello, World!";
+
+if ( isString(value) ) {
+    console.log(value.length);
+}
+```
+
+isString関数の戻り値の型に注目してみましょう。普段では見ることのできない **value is string** という型です。
+
+value is string という型は、value を string 型であることにする。という意味です。
+
+もし、valueが本当にstring型である場合、この関数はboolean型のtrueを返さないといけません。
+
+このように、型が本当にその型であるかどうかを判定する関数を型ガードと呼びます。
+
+### 3.1.6 any型
+
+TypeScriptでは、any型を使って、型を無効化することが出来ます。
+
+```typescript
+let value: any = "Hello, World!";
+```
+
+このように、valueにany型を指定することで、valueにはどんな型の値も代入することが出来ます。
+
+```typescript
+let value: any = "Hello, World!";
+value = 123; //OK
+value = true; //OK
+```
+
+any型を使うということは、JavaScriptと同じような型の不安を持ってもよい。という宣言です。
+
+私はできる限り使いません。any型を使うのであれば、TypeScriptを使う意味がないと思っています。
+
+### 3.1.7 unknown型
+
+そんなany型に対して、TypeScriptには安全に不明な型、v3.0で導入されたunknown型があります。
+
+実際にどのような挙動をするのか、見てみましょう。
+
+```typescript
+let value: unknown = "Hello, World!";
+value = 123; //OK
+value = true; //OK
+```
+
+一見any型と同じように見えますが、unknown型はany型とは異なり、型安全性を保持します。
+
+```typescript
+let value: unknown = "Hello, World!";
+console.log(value.length); // Error: Property 'length' does not exist on type 'unknown'.
+```
+
+このように、unknown型は、型が不明なため、プロパティやメソッドにアクセスすることが出来ません。
+
+unknown型を使うことで、any型のような型の不安を持たずに、型安全性を保持することが出来ます。
+
+### 3.1.8. never型
+
+never型は、**決して**値を持たない型です。よくわかりませんよね。実際の例を見てみましょう。
+
+```typescript
+interface LetsCreateNever {
+    value : string & number
+}
+```
+
+このように、string型とnumber型を結合した型を持つvalueプロパティを持つインターフェースを作成しました。
+
+しかし、string型とnumber型はそれぞれ独立した**プリミティブ型**であることを考えると、このような型は存在しないはずです。
+
+このような型を持つ値は存在しないため、never型という型になります。
+
+また、エラーを返す、例外を投げる、無限ループをするなど、**決して**値を返さない関数の戻り値の型としても使われます。
+
+```typescript
+function throwError(message: string): never {
+    throw new Error(message);
+}
+```
+
+このように、throwError関数は、引数として受け取ったmessageを使って、エラーを投げる関数です。
+
+throwをしてしまうと、そこで関数の処理は停止してしまいます。そのため、戻り値を持たないnever型を使うことが出来ます。
+
+### 3.1.9. void型
+
+void型とは、**何も返さない**という意味です。
+
+```typescript
+function sayHello(): void {
+    console.log("Hello, World!");
+}
+```
+
+このように、sayHello関数は、何も返さないため、void型を返します。
+
+void型は、主に関数の戻り値の型として使われます。
+
+void型であるかを判別するときは、typeof演算子を使うことが出来ます。
+
+```typescript
+function sayHello(): void {
+    console.log("Hello, World!");
+}
+
+if (typeof sayHello() === "undefined") {
+    console.log("sayHello関数はvoid型です");
+}
+```
+
+## 3.2. 発展的な型
+
+TypeScriptには、他にも様々な型関数を作ることができます。
+
+### 3.2.1. Generics
+
+Generics（ジェネリクス）は、型を引数として受け取ることができる関数やクラスを作成するための機能です。
+
+たとえば、以下のような関数を考えてみましょう。
+
+```typescript
+function identity( arg: string ): string {
+    return arg;
+}
+```
+
+この関数は、引数として受け取った値をそのまま返す関数です。いわゆるオウム返し関数ですね。
+
+しかし、この関数は引数としてstring型しか受け取ることができません。number型も返したい！ってなったとき、どうしますか？
+
+そうですね、単純に考えると増やせばいいですよね。
+
+```typescript
+function identity2( arg: number ): number {
+    return arg;
+}
+```
+
+しかし、このままそれぞれ自分の思う型に対して関数を作成していくと、コードが膨大になってしまいます。
+
+これではよくないですよね。こういったときに活躍するのがGenericsです。
+
+以下の例を見てみましょう。
+
+```typescript
+function identity<T>(arg: T): T {
+    return arg;
+}
+```
+
+関数の名前の後に\<T\>という不思議な文字列が出てきましたね。これがGenericsです。
+この関数内にTという形の決まっていない型を生成し、使用するときに型を引数として受け取るようにすることを可能にしたのがGenericsです。
+
+この関数を使って上の例を書き換えてみましょう。
+
+```typescript
+console.log( identity<string>("Hello, World!") ); // Hello, World!
+console.log( identity<number>(123) ); // 123
+```
+
+このように、Genericsを使うことで、型を引数として受け取ることができるようになりました。
+
+### 3.2.2 Generics + α
+
+Generics、便利ですよね。でも、もっと便利に使いたい！というときに使えるのがあるんです。
+
+それが、Genericsの**制約**です。
+
+Genericsの制約とは、Genericsで受け取る型に対して、特定の条件を設けることができる機能です。
+
+例えば、以下のような関数を考えてみましょう。
+
+```typescript
+function identity<T>(arg: T): T {
+    return arg;
+}
+```
+
+この関数は、引数として受け取った値をそのまま返す関数です。
+
+しかし、この関数はどんな型でも受け取ることができます。もし、object型を受け取りたくない場合、どうしますか？
+
+そうですね、Genericsの制約を使います。
+
+```typescript
+function identity<T extends string>(arg: T): T {
+    return arg;
+}
+```
+
+このように、Genericsの後にextends stringという制約を設けることで、string型以外の型を受け取ることができなくなりました。
+
+同じように、number型も追加してみましょう。
+
+```typescript
+function identity<T extends string | number>(arg: T): T {
+    return arg;
+}
+```
+
+Genericsの制約を書くとき、複数の型を指定するときはUnion型を使うと便利です。
+
+Union型は集合で言う**和集合**です。（AもしくはB）
+
+そう考えると、T extends string | number は、**Tはstringもしくはnumberである**。という意味になります。分かりやすいですね。
+
+### 3.2.3. keyof
+
+keyofは、オブジェクトのプロパティ名を取得するための演算子です。
+
+例えば、以下のようなオブジェクトがあるとします。
+
+```typescript
+const user = {
+    name: "John",
+    age: 20,
+    email: "
+}
+```
+
+このオブジェクトのプロパティ（ name, age, email ）を取得するためには、keyof演算子を使います。
+
+```typescript
+type User = typeof user;
+```
+
+このように型を作ると、自動的にUser型はname | age | emailというUnion型になります。
+
+このように、keyof演算子を使うことで、オブジェクトのプロパティ名を取得することができます。
+
+使いどころさんはさておき。
+
+### 3.2.4. Optional
+
+オブジェクトのプロパティは、必ずしも存在しない場合があります。
+
+そういった場合は、Optionalという型を使うことができます。
+
+例えば、以下のようなオブジェクトがあるとします。
+
+```typescript
+type User = {
+    name: string;
+    age?: number;
+}
+```
+
+このように、ageの後に?をつけることで、ageプロパティが存在しない場合があることを示します。
+
+このように、Optionalを使うことで、オブジェクトのプロパティが存在しない場合を表現することができます。
+
+## 3.3. おわりに
+
+TypeScriptの基本的な使い方を学びました。
+
+TypeScriptは、JavaScriptの**親戚**であり、**静的**型付けを出来るようにした**プログラミング言語**です。
+
+TypeScriptを使うことで、**型**を使って、**コードの品質**を向上させると同時に、**開発体験の向上**というあまり考慮されないメリットも提供してくれます。
+
+TypeScriptを使いましょう。そして、静的型付けの沼にはまりましょう。以上です。
+
+
