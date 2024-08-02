@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "./Link";
 
 
 export function PageNavigation({
@@ -15,10 +15,10 @@ export function PageNavigation({
     return (
         <div className="flex justify-between">
             <Link href={previousPage} className="text-blue-500 no-underline">
-                〈 {previousPageTitle}
+                〈  &nbsp;{previousPageTitle}
             </Link>
             <Link href={nextPage} className="text-blue-500 no-underline">
-                {nextPageTitle} 〉
+                {nextPageTitle}&nbsp; 〉
             </Link>
         </div>
     )
