@@ -4,10 +4,181 @@ import { PageNavigation } from "../../../components/pageNavigation";
 <PageNavigation 
     previousPage={"/tutorial/what-is-typescript"} 
     previousPageTitle={"TypeScriptとは？"} 
-    nextPage={"/tutorial/fetch-api#"}
-    nextPageTitle={"まだないよ"}
+    nextPage={"/tutorial/display-api-data#"}
+    nextPageTitle={"APIデータを表示してみよう"}
 />
 
 # 4. APIをFetchする
 
-（執筆中）
+TypeScriptも、Next.jsの基礎もわかったところで、次はAPIをFetchしてみましょう。
+
+## 4.0. Fetch APIとは（A.I.生成）
+
+Fetch APIは、ブラウザに組み込まれているJavaScriptのAPIです。Fetch APIを使うことで、サーバーからデータを取得したり、サーバーにデータを送信したりすることができます。
+
+Fetch APIは、XMLHttpRequestよりもシンプルで使いやすいため、最近のWeb開発ではFetch APIが主流となっています。
+
+## 4.0. Fetch APIとは（簡単な説明）
+
+APIっていうやつを取得したり送信したりするやつ
+
+ブラウザにはだいたいある
+
+## 4.1. Fetch APIを使ってみよう
+
+Fetch APIを使って、[外部のAPI](https://jsonplaceholder.typicode.com/)からデータを取得してみましょう。
+
+### 4.1.1. Fetch APIの基本的な使い方
+
+FetchAPIは、大体`fetch()`という関数で実装されています。実際に見てみましょう。
+
+```typescript
+fetch('https://jsonplaceholder.typicode.com/todos/1')
+    .then(response => response.json())
+    .then(json => console.log(json));
+```
+
+ちょっと、なんかこう、長いですね。もうちょっときれいにならないでしょうか。
+
+型を見てみましょう。Fetch関数は`Promise<Response>`という型を返します。
+
+`Promise<T>`型は、非同期処理（async/await）を扱うための型です。`Promise<T>`型は、`T`型の値を返す非同期処理を表します。
+
+`Promise<T>`型を返す関数の値を取得するために、上記では`then()`関数のコールバックを使用しましたが、`async/await`を使うことでもうちょっときれいに書くことができます。
+
+実際にそのような非同期関数を作成してみましょう。
+```typescript
+async function fetchTodo() {
+    const response = await fetch('https://jsonplaceholder.typicode.com/todos/1');
+    const json = await response.json();
+    console.log(json);
+}
+```
+このような感じで、より文章的なコードを書くことが出来ました。
+
+## 4.1.2 FetchAPIに型を付けよう。
+
+FetchAPIで取得した`JSON`形式のデータには型が付いていません。ついていると言えばついているんですが、`any`型がついているので実質的にはついてないと言えます。
+
+こういったときに、TypeScriptの基本で学んだ**型アサーション**を使って型を付けることができます。
+
+型アサーションをする前に、まずはこのJSONを型にしてみましょう。
+
+実際のデータはこうです。
+
+```json
+{
+    "userId": 1,
+    "id": 1,
+    "title": "delectus aut autem",
+    "completed": false
+}
+```
+
+なるほど。こんな形になっているんですね。
+
+これを型にするとこんな感じでしょうか。今回は`interface`を使います。
+
+```typescript
+interface Todo {
+    userId: number;
+    id: number;
+    title: string;
+    completed: boolean;
+}
+```
+
+これで、`Todo`型が作成できました。次に、この型を使ってFetchAPIの結果に型を付けてみましょう。
+
+```typescript
+async function fetchTodo() {
+    const response = await fetch('https://jsonplaceholder.typicode.com/todos/1');
+    const json = await response.json() as Todo; // as 型 の形で型アサーション
+    console.log(json);
+}
+```
+
+これで、`json`変数には`Todo`型が付与されました。安心してコーディングが出来ますね。
+
+## 4.1. これをNext.jsでも同じことをしてみる
+
+これをNext.jsでも同じことをしてみましょう。
+
+まずは、`page.tsx`がこのようなことになっているということで創造していきます。
+
+```tsx
+
+export default function Page() {
+    return (
+        <div>
+            <h1>Fetch APIを使いたい！</h1>
+        </div>
+    )
+}
+```
+
+通常、`fetch()`関数はブラウザでのAPIというように**ブラウザ**サイドで実行する必要があります。
+
+しかしこの実装のままであると、**Server Side Rendering**になってしまいます。**ブラウザ**サイドで作るべきなので、これではいけませんね。
+
+※`fetch()`関数はブラウザでのAPIなので、**Server Side Rendering**では使えません。
+
+※SSRでも使えるようになる方法もありますが、今回は割愛します。難しいからです。
+
+では、どうすればいいのでしょうか。こういった場合、ページがCSR（Client Side Rendering）で作成されるようにする必要があります。
+
+CSRというページ形式は、ファイルの先端に`"use client"`という宣言を入れることで設定できます。
+
+```tsx
+"use client";
+
+export default function Page() {
+    return (
+        <div>
+            <h1>Fetch APIを使いたい！</h1>
+        </div>
+    )
+}
+```
+
+この一行で、このページはCSRになりました。これで、Reactの便利なHookを使うことができます。
+
+Reactの便利なHookを使って、FetchAPIを使ってみましょう。
+
+```tsx
+"use client";
+
+import { useEffect } from "react";
+
+export default function Page() {
+    useEffect(() => {
+        fetchTodo();
+    }, []);
+
+    async function fetchTodo() {
+        const response = await fetch('https://jsonplaceholder.typicode.com/todos/1');
+        const json = await response.json();
+        console.log(json);
+    }
+
+    return (
+        <div>
+            <h1>Fetch APIを使いたい！</h1>
+        </div>
+    )
+}
+
+```
+
+`useEffect`フックというものが出てきましたね。このフックは、`[]`の中身が変化したときに実行される関数を設定することができます。
+
+今回は、`[]`の中身が変化しないので、初回レンダリング時に`fetchTodo()`関数が実行されます。
+
+ちなみに`[]`を指定しないと、ずっと実行され続けるので注意が必要です。
+
+これで、ページをロードするとコンソールにデータが表示されるはずです。
+
+## 4.2. まとめ
+
+難しそうですが、案外簡単で便利なので是非覚えてください！
+
