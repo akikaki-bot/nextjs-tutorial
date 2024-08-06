@@ -2,14 +2,14 @@ import { Link } from "./Link";
 
 
 export function PageNavigation({
-    previousPage,
-    nextPage,
-    previousPageTitle,
-    nextPageTitle,
+    previousPage = "#",
+    nextPage = "#",
+    previousPageTitle = "前はありません",
+    nextPageTitle = "続きはありません",
 } : {
     previousPage: string,
     nextPage: string,
-    previousPageTitle: string,
+    previousPageTitle: string ,
     nextPageTitle: string,
 }) {
     return (

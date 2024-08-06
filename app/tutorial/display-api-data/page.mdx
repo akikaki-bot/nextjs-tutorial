@@ -4,8 +4,182 @@ import { PageNavigation } from "../../../components/pageNavigation";
 <PageNavigation 
     previousPage={"/tutorial/fetch-api"} 
     previousPageTitle={"Fetch APIを使ってみよう"} 
-    nextPage={"/tutorial/display-api-data#"}
-    nextPageTitle={"まだないよ"}
 />
 
 # 5. Fetchしたデータを表示してみよう
+
+ここまでで、Fetch APIを使って外部のAPIからデータを取得する方法を学びました。次は、取得したデータを表示してみましょう。
+
+## 5.1. データの保存
+
+取得したデータを表示するには、`fetch`関数で取得したデータをコンポーネントの状態に保存し、その状態を表示するコンポーネントを作成します。
+
+まず、`fetch`関数で取得したデータをコンポーネントの状態に保存するためのコンポーネントを作成します。
+
+データを保存するためには、通常変数等を使うというイメージがあると思いますが、Reactでは状態を保存するための`useState`というフックを使います。
+
+`useState`を使わないと、コンポーネントの再レンダリングが走らなくなります[^1] 。なので、`useState`を使って状態を保存することが重要です。
+
+まずは、`useState`を使って状態を保存するコンポーネントを作成してみましょう。
+
+```tsx
+"use client";
+
+import { useEffect, useState } from "react";
+
+export default function Page() {
+
+    const [ todo, setTodo ] = useState<Todo | null>(null);
+
+    useEffect(() => {
+        fetchTodo();
+    }, []);
+
+    async function fetchTodo() {
+        const response = await fetch('https://jsonplaceholder.typicode.com/todos/1');
+        const json = await response.json() as Todo;
+        setTodo(json);
+    }
+
+    return (
+        <div>
+            <h1>Fetch APIを使いたい！</h1>
+        </div>
+    )
+}
+```
+
+今回の例では初期値を`null`、型を`Todo | null`のUnion型に設定しました。私的解釈として、`null`を使用する理由はいかにあります。
+
+- 初期値を`null`にすることで、ユーザーにデータが取得されるまで何も表示しないようにすること出来ること。
+- そもそも初期値を`undefined`にしてしまうと、何か意図していない動作が起こることが多い。
+
+ここら辺は個人の好み等はあると思いますが、データフェッチの際は初期値を`null`にしておくとよいでしょう。
+
+ともかく、`useState`を使って`todo`という状態を作成し、`setTodo`関数を使って状態を更新することができるようになりました。
+
+## 5.2. データの表示
+
+次に、取得したデータを表示するコンポーネントを作成します。
+
+JSX (TSX)では、以下のようにJavaScriptコードを埋め込むことができます。
+
+### 変数
+```js
+const name = "John";
+```
+
+### JSXの表示
+```jsx
+<div>
+    {name}と言います。よろしくお願いします。
+</div>
+```
+
+このように、`{}`で囲むことでコードを埋め込むことができますので、これを活用していきます。
+
+さっそく、Todo型のデータを表示するコンポーネントを作成してみましょう。
+
+たしかTodo型はこんな感じでしたよね。
+
+```ts
+interface Todo {
+    userId: number;
+    id: number;
+    title: string;
+    completed: boolean;
+}
+```
+
+これを思い出しつつ、早速表示してみましょう。
+
+
+```tsx
+"use client";
+
+import { useEffect, useState } from "react";
+
+export default function Page() {
+
+    const [ todo, setTodo ] = useState<Todo | null>(null);
+
+    useEffect(() => {
+        fetchTodo();
+    }, []);
+
+    async function fetchTodo() {
+        const response = await fetch('https://jsonplaceholder.typicode.com/todos/1');
+        const json = await response.json() as Todo;
+        setTodo(json);
+    }
+
+    return (
+        <div>
+            タイトル : { todo.title }
+            <br />
+            完了 : { todo.completed ? "執筆完了" : "執筆中..." }
+        </div>
+    )
+}
+```
+
+ﾖｼこれで出来た....あれ？何かTypeScriptコンパイルエラーが出ているようですね。
+
+```shell
+Property 'title' does not exist on type 'Todo | null'.  TS2339
+```
+
+`Todo | null`には`title`プロパティが存在しない...？
+
+まぁ当たり前ですよね。空箱の`null`と`Todo`の和集合には`title`プロパティが存在しない可能性があるのが確かです。
+
+なので、`todo`が`null`の場合は何も表示しないように条件分岐を追加しましょう。
+
+```tsx
+"use client";
+
+import { useEffect, useState } from "react";
+
+export default function Page() {
+
+    const [ todo, setTodo ] = useState<Todo | null>(null);
+
+    useEffect(() => {
+        fetchTodo();
+    }, []);
+
+    async function fetchTodo() {
+        const response = await fetch('https://jsonplaceholder.typicode.com/todos/1');
+        const json = await response.json() as Todo;
+        setTodo(json);
+    }
+
+    if( todo === null ) return (
+        <div> データ取得中... </div>
+    )
+
+    return (
+        <div>
+            タイトル : { todo.title }
+            <br />
+            完了 : { todo.completed ? "執筆完了" : "執筆中..." }
+        </div>
+    )
+}
+```
+
+これで、データが取得されるまで「データ取得中...」と表示され、データが取得されたらタイトルと完了状態が表示されるようになりました。
+
+## 5.3. まとめ
+
+今回は、Fetch APIを使って取得したデータを表示する方法を学びました。
+
+以下の方法でデータは取得し・表示することができます。
+- `useEffect`でファーストレンダリングを感知する
+- `fetch`関数でデータを取得する
+- `useState`でデータを保存する
+- 取得したデータを表示する
+
+次回はやっと、ReactNativeに関係しそうなやつをやります。
+
+[^1]: https://qiita.com/KokiSakano/items/c16a8daf03acdbd6c911
